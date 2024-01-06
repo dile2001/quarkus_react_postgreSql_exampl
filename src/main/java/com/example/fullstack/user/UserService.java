@@ -3,6 +3,7 @@ package com.example.fullstack.user;
 import com.example.fullstack.project.Project;
 import com.example.fullstack.task.Task;
 import io.quarkus.elytron.security.common.BcryptUtil;
+//import io.quarkus.hibernate.reactive.panache.common.runtime.WithTransaction;
 import io.quarkus.hibernate.reactive.panache.common.runtime.ReactiveTransactional;
 import io.smallrye.mutiny.Uni;
 import org.hibernate.ObjectNotFoundException;
@@ -42,12 +43,7 @@ public class UserService {
     @ReactiveTransactional
     public Uni<Void> delete(long id) {
         return findById(id)
-                .chain(u -> Uni.combine().all().unis(
-                                        Task.delete("user.id", u.id),
-                                        Project.delete("user.id", u.id)
-                                ).asTuple()
-                                .chain(t -> u.delete())
-                );
+                .chain(u -> Uni.combine().all().unis(Task.delete("user.id", u.id), Project.delete("user.id", u.id)).asTuple().chain(t -> u.delete()));
     }
 
     public Uni<User> getCurrentUser() {
